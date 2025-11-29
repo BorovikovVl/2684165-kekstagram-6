@@ -19,6 +19,10 @@ const ErrorText = {
   INVALID_COMMENT: `Длина комментария не должна превышать ${MAX_COMMENT_LENGTH} символов`
 };
 
+if (typeof Pristine === 'undefined') {
+  console.error('Pristine not found. Make sure pristine.min.js is loaded before your modules.');
+}
+
 const pristine = new Pristine(form, {
   classTo: 'img-upload__field-wrapper',
   errorTextParent: 'img-upload__field-wrapper',
@@ -45,13 +49,45 @@ const hasValidTags = (value) => {
 
 const hasValidComment = (value) => value.length <= MAX_COMMENT_LENGTH;
 
-pristine.addValidator(hashtagField, hasValidCount, ErrorText.INVALID_COUNT, 3, true);
-pristine.addValidator(hashtagField, hasUniqueTags, ErrorText.NOT_UNIQUE, 2, true);
-pristine.addValidator(hashtagField, hasValidTags, ErrorText.INVALID_PATTERN, 1, true);
-pristine.addValidator(commentField, hasValidComment, ErrorText.INVALID_COMMENT, 1, true);
+pristine.addValidator(
+  hashtagField,
+  hasValidCount,
+  ErrorText.INVALID_COUNT,
+  3,
+  true
+);
 
-const onFieldFocus = () => document.removeEventListener('keydown', onDocumentKeydown);
-const onFieldBlur = () => document.addEventListener('keydown', onDocumentKeydown);
+pristine.addValidator(
+  hashtagField,
+  hasUniqueTags,
+  ErrorText.NOT_UNIQUE,
+  2,
+  true
+);
+
+pristine.addValidator(
+  hashtagField,
+  hasValidTags,
+  ErrorText.INVALID_PATTERN,
+  1,
+  true
+);
+
+pristine.addValidator(
+  commentField,
+  hasValidComment,
+  ErrorText.INVALID_COMMENT,
+  1,
+  true
+);
+
+const onFieldFocus = () => {
+  document.removeEventListener('keydown', onDocumentKeydown);
+};
+
+const onFieldBlur = () => {
+  document.addEventListener('keydown', onDocumentKeydown);
+};
 
 hashtagField.addEventListener('focus', onFieldFocus);
 hashtagField.addEventListener('blur', onFieldBlur);
@@ -73,6 +109,8 @@ const showModal = () => {
   overlay.classList.remove('hidden');
   document.body.classList.add('modal-open');
   document.addEventListener('keydown', onDocumentKeydown);
+  
+  pristine.reset();
 };
 
 const hideModal = () => {
@@ -84,6 +122,7 @@ const hideModal = () => {
   overlay.classList.add('hidden');
   document.body.classList.remove('modal-open');
   document.removeEventListener('keydown', onDocumentKeydown);
+  
   fileField.value = '';
 };
 
@@ -97,15 +136,32 @@ const onFormSubmit = (evt) => {
   const isValid = pristine.validate();
   
   if (isValid) {
-    console.log('Форма валидна, можно отправлять на сервер');
+    console.log('Форма валидна, отправляем данные на сервер');
     hideModal();
+  } else {
+    console.log('Форма содержит ошибки валидации');
+    const firstError = form.querySelector('.img-upload__field-wrapper--error');
+    if (firstError) {
+      firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   }
+};
+
+const setupLiveValidation = () => {
+  hashtagField.addEventListener('input', () => {
+    pristine.validate(hashtagField);
+  });
+  
+  commentField.addEventListener('input', () => {
+    pristine.validate(commentField);
+  });
 };
 
 const initForm = () => {
   fileField.addEventListener('change', onFileInputChange);
   cancelButton.addEventListener('click', onCancelButtonClick);
   form.addEventListener('submit', onFormSubmit);
+  setupLiveValidation();
 };
 
 export { initForm, hideModal };
