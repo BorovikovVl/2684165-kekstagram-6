@@ -52,9 +52,7 @@ const Effects = {
 let currentEffect = 'none';
 let slider = null;
 
-const isNoUiSliderAvailable = () => {
-  return typeof noUiSlider !== 'undefined';
-};
+const isNoUiSliderAvailable = () => typeof noUiSlider !== 'undefined';
 
 const initSlider = () => {
   if (!isNoUiSliderAvailable()) {
@@ -145,7 +143,7 @@ const applyEffect = (value) => {
   effectLevelValue.value = value;
 };
 
-const onEffectChange = (evt) => {
+const effectChange = (evt) => {
   if (evt.target.classList.contains('effects__radio')) {
     currentEffect = evt.target.value;
     imagePreview.className = `effects__preview--${currentEffect}`;
@@ -191,7 +189,10 @@ const destroyEffects = () => {
     slider.destroy();
     slider = null;
   }
-  effectsList.removeEventListener('change', onEffectChange);
+
+  if (effectsList) {
+    effectsList.removeEventListener('change', onEffectChange);
+  }
 };
 
 const initEffects = () => {
@@ -205,7 +206,7 @@ const initEffects = () => {
 
   initSlider();
 
-  effectsList.addEventListener('change', onEffectChange);
+  effectsList.addEventListener('change', effectChange);
 
   resetEffects();
 };
