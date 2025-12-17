@@ -10,7 +10,7 @@ const fileField = document.querySelector('.img-upload__input');
 const hashtagField = document.querySelector('.text__hashtags');
 const commentField = document.querySelector('.text__description');
 const submitButton = document.querySelector('.img-upload__submit');
-const preview = document.querySelector('.img-upload__preview img');
+const imgPreview = document.querySelector('.img-upload__preview img');
 const effectsPreviews = document.querySelectorAll('.effects__preview');
 
 const MAX_HASHTAG_COUNT = 5;
@@ -80,9 +80,9 @@ const isValidFileType = (file) => {
 
 const createPreviewUrl = (file) => URL.createObjectURL(file);
 
-const updatePreview = (fileUrl) => {
-  if (preview) {
-    preview.src = fileUrl;
+const updateImagePreview = (fileUrl) => {
+  if (imgPreview) {
+    imgPreview.src = fileUrl;
   }
 
   if (effectsPreviews.length > 0) {
@@ -95,8 +95,8 @@ const updatePreview = (fileUrl) => {
 };
 
 const cleanupObjectUrls = () => {
-  if (preview && preview.src && preview.src.startsWith('blob:')) {
-    URL.revokeObjectURL(preview.src);
+  if (imgPreview && imgPreview.src && imgPreview.src.startsWith('blob:')) {
+    URL.revokeObjectURL(imgPreview.src);
   }
 };
 
@@ -184,7 +184,7 @@ const showModal = () => {
   overlay.classList.remove('hidden');
   document.body.classList.add('modal-open');
   document.addEventListener('keydown', onDocumentKeydown);
-  
+
   if (pristine) {
     pristine.reset();
   }
@@ -195,17 +195,17 @@ const hideModal = () => {
   resetScale();
   resetEffects();
   destroyEffects();
-  
+
   if (pristine) {
     pristine.reset();
   }
-  
+
   cleanupObjectUrls();
-  
-  if (preview) {
-    preview.src = 'img/upload-default-image.jpg';
+
+  if (imgPreview) {
+    imgPreview.src = 'img/upload-default-image.jpg';
   }
-  
+
   if (effectsPreviews.length > 0) {
     effectsPreviews.forEach((effectPreview) => {
       effectPreview.style.backgroundImage = '';
@@ -221,7 +221,7 @@ const hideModal = () => {
 
 const onFileInputChange = () => {
   const file = fileField.files[0];
-  
+
   if (!file) {
     return;
   }
@@ -235,13 +235,8 @@ const onFileInputChange = () => {
   cleanupObjectUrls();
 
   const fileUrl = createPreviewUrl(file);
-  
-  updatePreview(fileUrl);
-
+  updateImagePreview(fileUrl);
   showModal();
-
-  const preview = document.querySelector('.img-upload__preview img');
-  preview.src = URL.createObjectURL(file);
 };
 
 const showErrorOverlay = (errorText) => {
@@ -297,14 +292,14 @@ const showErrorOverlay = (errorText) => {
     }
   };
 
+  document.addEventListener('keydown', onEscapePress);
+
   errorOverlay.querySelector('.error-overlay__button').addEventListener('click', closeErrorOverlay);
   errorOverlay.addEventListener('click', (evt) => {
     if (evt.target === errorOverlay) {
       closeErrorOverlay();
     }
   });
-
-  document.addEventListener('keydown', onEscapePress);
 };
 
 const onFormSubmit = async (evt) => {

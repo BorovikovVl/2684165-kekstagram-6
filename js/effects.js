@@ -194,7 +194,7 @@ const destroyEffects = () => {
 
 const updateEffectsPreviews = (imageUrl) => {
   const effectsPreviews = document.querySelectorAll('.effects__preview');
-  
+
   effectsPreviews.forEach((previewElement) => {
     if (imageUrl) {
       previewElement.style.backgroundImage = `url(${imageUrl})`;
