@@ -100,35 +100,6 @@ const cleanupObjectUrls = () => {
   }
 };
 
-const onDocumentKeydown = (evt) => {
-  if (evt.key === 'Escape' && !overlay.classList.contains('hidden')) {
-    evt.preventDefault();
-    onCancelButtonClick();
-  }
-};
-
-const onFieldFocus = () => {
-  document.removeEventListener('keydown', onDocumentKeydown);
-};
-
-const onFieldBlur = () => {
-  document.addEventListener('keydown', onDocumentKeydown);
-};
-
-const onCancelButtonClick = () => {
-  hideModal();
-};
-
-const showModal = () => {
-  overlay.classList.remove('hidden');
-  document.body.classList.add('modal-open');
-  document.addEventListener('keydown', onDocumentKeydown);
-
-  if (pristine) {
-    pristine.reset();
-  }
-};
-
 const hideModal = () => {
   form.reset();
   resetScale();
@@ -156,6 +127,35 @@ const hideModal = () => {
   document.removeEventListener('keydown', onDocumentKeydown);
 
   fileField.value = '';
+};
+
+const onCancelButtonClick = () => {
+  hideModal();
+};
+
+const onDocumentKeydown = (evt) => {
+  if (evt.key === 'Escape' && !overlay.classList.contains('hidden')) {
+    evt.preventDefault();
+    onCancelButtonClick();
+  }
+};
+
+const onFieldFocus = () => {
+  document.removeEventListener('keydown', onDocumentKeydown);
+};
+
+const onFieldBlur = () => {
+  document.addEventListener('keydown', onDocumentKeydown);
+};
+
+const showModal = () => {
+  overlay.classList.remove('hidden');
+  document.body.classList.add('modal-open');
+  document.addEventListener('keydown', onDocumentKeydown);
+
+  if (pristine) {
+    pristine.reset();
+  }
 };
 
 const setupValidation = () => {
@@ -281,15 +281,15 @@ const showErrorOverlay = (errorText) => {
   errorOverlay.appendChild(errorContent);
   document.body.appendChild(errorOverlay);
 
-  const closeErrorOverlay = () => {
-    errorOverlay.remove();
-    document.removeEventListener('keydown', onEscapePress);
-  };
-
-  const onEscapePress = (evt) => {
+    const onEscapePress = (evt) => {
     if (evt.key === 'Escape') {
       closeErrorOverlay();
     }
+  };
+
+  const closeErrorOverlay = () => {
+    errorOverlay.remove();
+    document.removeEventListener('keydown', onEscapePress);
   };
 
   document.addEventListener('keydown', onEscapePress);
