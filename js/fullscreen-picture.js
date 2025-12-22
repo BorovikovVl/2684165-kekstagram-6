@@ -10,6 +10,8 @@ let currentComments = [];
 let commentsShown = 0;
 const COMMENTS_PER_STEP = 5;
 
+let fullscreenEscapeHandler = null;
+
 const createComment = (comment) => {
   const commentElement = document.createElement('li');
   commentElement.classList.add('social__comment');
@@ -69,12 +71,10 @@ const closeFullscreenPicture = () => {
   bigPicture.classList.add('hidden');
   document.body.classList.remove('modal-open');
   resetComments();
-  document.removeEventListener('keydown', handleFullscreenEscape);
-};
 
-const handleFullscreenEscape = (evt) => {
-  if (isEscapeKey(evt) && !bigPicture.classList.contains('hidden')) {
-    closeFullscreenPicture();
+  if (fullscreenEscapeHandler) {
+    document.removeEventListener('keydown', fullscreenEscapeHandler);
+    fullscreenEscapeHandler = null;
   }
 };
 
@@ -91,7 +91,14 @@ const openFullscreenPicture = (pictureData) => {
 
   bigPicture.classList.remove('hidden');
   document.body.classList.add('modal-open');
-  document.addEventListener('keydown', handleFullscreenEscape);
+  
+  fullscreenEscapeHandler = (evt) => {
+    if (isEscapeKey(evt) && !bigPicture.classList.contains('hidden')) {
+      closeFullscreenPicture();
+    }
+  };
+  
+  document.addEventListener('keydown', fullscreenEscapeHandler);
 };
 
 commentsLoader.addEventListener('click', loadMoreComments);

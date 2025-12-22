@@ -2,12 +2,12 @@ import { resetScale } from './scale.js';
 import { resetEffects, destroyEffects } from './effects.js';
 import { sendData } from './api.js';
 import { showErrorMessage, showSuccessMessage } from './message.js';
-import { 
-  isEscapeKey, 
-  isValidFileType, 
-  createObjectURL, 
+import {
+  isEscapeKey,
+  isValidFileType,
+  createObjectURL,
   revokeObjectURL,
-  smoothScrollToElement 
+  smoothScrollToElement
 } from './utils.js';
 
 const form = document.querySelector('.img-upload__form');
@@ -139,7 +139,7 @@ const hideModal = () => {
 
   overlay.classList.add('hidden');
   document.body.classList.remove('modal-open');
-  
+
   if (modalEscapeHandler) {
     document.removeEventListener('keydown', modalEscapeHandler);
     modalEscapeHandler = null;

@@ -7,17 +7,45 @@ const showMessage = (template, buttonClass, closeCallback = null, extraCallback 
   const messageElement = template.cloneNode(true);
   const messageButton = messageElement.querySelector(buttonClass);
 
+  const handlers = {
+    documentKeydown: null,
+    outsideClick: null,
+    messageClick: null,
+    buttonClick: null
+  };
+
+  const removeAllHandlers = () => {
+    if (handlers.documentKeydown) {
+      document.removeEventListener('keydown', handlers.documentKeydown);
+    }
+    if (handlers.outsideClick) {
+      document.removeEventListener('click', handlers.outsideClick);
+    }
+    if (handlers.messageClick) {
+      messageElement.removeEventListener('click', handlers.messageClick);
+    }
+    if (handlers.buttonClick) {
+      messageButton.removeEventListener('click', handlers.buttonClick);
+    }
+  };
+
   const closeMessage = () => {
+    removeAllHandlers();
     messageElement.remove();
-    document.removeEventListener('keydown', onDocumentKeydown);
-    document.removeEventListener('click', onOutsideClick);
 
     if (typeof closeCallback === 'function') {
       closeCallback();
     }
   };
 
-  const onDocumentKeydown = (evt) => {
+  handlers.buttonClick = () => {
+    closeMessage();
+    if (typeof extraCallback === 'function') {
+      extraCallback();
+    }
+  };
+
+  handlers.documentKeydown = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
       closeMessage();
@@ -27,7 +55,7 @@ const showMessage = (template, buttonClass, closeCallback = null, extraCallback 
     }
   };
 
-  const onOutsideClick = (evt) => {
+  handlers.outsideClick = (evt) => {
     if (!evt.target.closest(`.${template.classList[0]}__inner`)) {
       closeMessage();
       if (typeof extraCallback === 'function') {
@@ -36,7 +64,7 @@ const showMessage = (template, buttonClass, closeCallback = null, extraCallback 
     }
   };
 
-  const onMessageClick = (evt) => {
+  handlers.messageClick = (evt) => {
     if (!evt.target.closest(`.${template.classList[0]}__inner`)) {
       closeMessage();
       if (typeof extraCallback === 'function') {
@@ -45,22 +73,15 @@ const showMessage = (template, buttonClass, closeCallback = null, extraCallback 
     }
   };
 
-  messageButton.addEventListener('click', () => {
-    closeMessage();
-    if (typeof extraCallback === 'function') {
-      extraCallback();
-    }
-  });
-
-  messageElement.addEventListener('click', onMessageClick);
-  document.addEventListener('keydown', onDocumentKeydown);
+  messageButton.addEventListener('click', handlers.buttonClick);
+  messageElement.addEventListener('click', handlers.messageClick);
+  document.addEventListener('keydown', handlers.documentKeydown);
 
   setTimeout(() => {
-    document.addEventListener('click', onOutsideClick);
+    document.addEventListener('click', handlers.outsideClick);
   }, 100);
 
   document.body.appendChild(messageElement);
-
   messageButton.focus();
 };
 
@@ -79,7 +100,7 @@ const showErrorMessage = (text = 'Не удалось загрузить дан�
   if (text.includes('JPG') || text.includes('PNG') || text.includes('формат')) {
     const errorButton = template.querySelector('.error__button');
     errorButton.textContent = 'Загрузить другой файл';
-    
+
     if (hideForm) {
       const closeFormCallback = () => {
         hideModal();
