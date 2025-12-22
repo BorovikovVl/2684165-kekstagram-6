@@ -100,17 +100,6 @@ const cleanupObjectUrls = () => {
   }
 };
 
-const onCancelButtonClick = () => {
-  hideModal();
-};
-
-const onDocumentKeydown = (evt) => {
-  if (evt.key === 'Escape' && !overlay.classList.contains('hidden')) {
-    evt.preventDefault();
-    onCancelButtonClick();
-  }
-};
-
 const hideModal = () => {
   form.reset();
   resetScale();
@@ -138,6 +127,17 @@ const hideModal = () => {
   document.removeEventListener('keydown', onDocumentKeydown);
 
   fileField.value = '';
+};
+
+const onCancelButtonClick = () => {
+  hideModal();
+};
+
+const onDocumentKeydown = (evt) => {
+  if (evt.key === 'Escape' && !overlay.classList.contains('hidden')) {
+    evt.preventDefault();
+    onCancelButtonClick();
+  }
 };
 
 const onFieldFocus = () => {
