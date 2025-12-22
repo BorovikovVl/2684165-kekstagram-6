@@ -140,7 +140,6 @@ const hideModal = () => {
   overlay.classList.add('hidden');
   document.body.classList.remove('modal-open');
   
-  // Удаляем обработчик Escape
   if (modalEscapeHandler) {
     document.removeEventListener('keydown', modalEscapeHandler);
     modalEscapeHandler = null;
@@ -231,88 +230,6 @@ const setupFieldFocusHandlers = () => {
   commentField.addEventListener('blur', onFieldBlur);
 };
 
-let errorOverlay = null;
-let errorOverlayEscapeHandler = null;
-
-const openUploadForm = () => {
-  fileField.click();
-};
-
-const closeErrorOverlay = () => {
-  if (errorOverlay) {
-    errorOverlay.remove();
-    errorOverlay = null;
-  }
-  if (errorOverlayEscapeHandler) {
-    document.removeEventListener('keydown', errorOverlayEscapeHandler);
-    errorOverlayEscapeHandler = null;
-  }
-};
-
-const showFileTypeError = () => {
-  errorOverlay = document.createElement('div');
-  errorOverlay.className = 'error-overlay';
-  errorOverlay.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.8);
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  `;
-
-  const errorContent = document.createElement('div');
-  errorContent.className = 'error-overlay__content';
-  errorContent.style.cssText = `
-    background-color: white;
-    padding: 30px;
-    border-radius: 10px;
-    text-align: center;
-    max-width: 400px;
-  `;
-
-  errorContent.innerHTML = `
-    <h3 style="margin-bottom: 15px; color: #ff6b6b;">Ошибка загрузки</h3>
-    <p style="margin-bottom: 20px;">${ErrorText.INVALID_FILE_TYPE}</p>
-    <button type="button" class="error-overlay__button" style="
-      background-color: #ff6b6b;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-    ">Загрузить другой файл</button>
-  `;
-
-  errorOverlay.appendChild(errorContent);
-  document.body.appendChild(errorOverlay);
-
-  errorOverlayEscapeHandler = (evt) => {
-    if (isEscapeKey(evt)) {
-      closeErrorOverlay();
-      openUploadForm();
-    }
-  };
-
-  document.addEventListener('keydown', errorOverlayEscapeHandler);
-
-  errorOverlay.querySelector('.error-overlay__button').addEventListener('click', () => {
-    closeErrorOverlay();
-    openUploadForm();
-  });
-  
-  errorOverlay.addEventListener('click', (evt) => {
-    if (evt.target === errorOverlay) {
-      closeErrorOverlay();
-      openUploadForm();
-    }
-  });
-};
-
 const onFileInputChange = () => {
   const file = fileField.files[0];
 
@@ -321,7 +238,7 @@ const onFileInputChange = () => {
   }
 
   if (!isValidFileType(file, FILE_TYPES)) {
-    showFileTypeError();
+    showErrorMessage(ErrorText.INVALID_FILE_TYPE, false);
     fileField.value = '';
     return;
   }
@@ -331,70 +248,6 @@ const onFileInputChange = () => {
   const fileUrl = createPreviewUrl(file);
   updateImagePreview(fileUrl);
   showModal();
-};
-
-const showErrorOverlay = (errorText) => {
-  errorOverlay = document.createElement('div');
-  errorOverlay.className = 'error-overlay';
-  errorOverlay.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.8);
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  `;
-
-  const errorContent = document.createElement('div');
-  errorContent.className = 'error-overlay__content';
-  errorContent.style.cssText = `
-    background-color: white;
-    padding: 30px;
-    border-radius: 10px;
-    text-align: center;
-    max-width: 400px;
-  `;
-
-  errorContent.innerHTML = `
-    <h3 style="margin-bottom: 15px; color: #ff6b6b;">Ошибка загрузки</h3>
-    <p style="margin-bottom: 20px;">${errorText}</p>
-    <button type="button" class="error-overlay__button" style="
-      background-color: #ff6b6b;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-    ">Загрузить другой файл</button>
-  `;
-
-  errorOverlay.appendChild(errorContent);
-  document.body.appendChild(errorOverlay);
-
-  errorOverlayEscapeHandler = (evt) => {
-    if (isEscapeKey(evt)) {
-      closeErrorOverlay();
-      openUploadForm();
-    }
-  };
-
-  document.addEventListener('keydown', errorOverlayEscapeHandler);
-
-  errorOverlay.querySelector('.error-overlay__button').addEventListener('click', () => {
-    closeErrorOverlay();
-    openUploadForm();
-  });
-  
-  errorOverlay.addEventListener('click', (evt) => {
-    if (evt.target === errorOverlay) {
-      closeErrorOverlay();
-      openUploadForm();
-    }
-  });
 };
 
 const onFormSubmit = async (evt) => {
@@ -429,7 +282,7 @@ const onFormSubmit = async (evt) => {
     }, 300);
 
   } catch (error) {
-    showErrorOverlay(error.message);
+    showErrorMessage(error.message, false);
   } finally {
     unblockSubmitButton();
   }
