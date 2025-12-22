@@ -65,6 +65,13 @@ const renderComments = (comments) => {
   renderCommentsPortion();
 };
 
+const closeFullscreenPicture = () => {
+  bigPicture.classList.add('hidden');
+  document.body.classList.remove('modal-open');
+  resetComments();
+  document.removeEventListener('keydown', handleFullscreenEscape);
+};
+
 const handleFullscreenEscape = (evt) => {
   if (isEscapeKey(evt) && !bigPicture.classList.contains('hidden')) {
     closeFullscreenPicture();
@@ -84,16 +91,7 @@ const openFullscreenPicture = (pictureData) => {
 
   bigPicture.classList.remove('hidden');
   document.body.classList.add('modal-open');
-  
   document.addEventListener('keydown', handleFullscreenEscape);
-};
-
-const closeFullscreenPicture = () => {
-  bigPicture.classList.add('hidden');
-  document.body.classList.remove('modal-open');
-  resetComments();
-  
-  document.removeEventListener('keydown', handleFullscreenEscape);
 };
 
 commentsLoader.addEventListener('click', loadMoreComments);

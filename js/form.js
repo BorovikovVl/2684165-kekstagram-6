@@ -37,17 +37,6 @@ const ErrorText = {
 
 let pristine;
 
-const handleModalEscape = (evt) => {
-  if (isEscapeKey(evt) && !overlay.classList.contains('hidden')) {
-    evt.preventDefault();
-    hideModal();
-  }
-};
-
-const onCancelButtonClick = () => {
-  hideModal();
-};
-
 const normalizeTags = (tagString) => tagString
   .trim()
   .split(' ')
@@ -113,6 +102,24 @@ const cleanupObjectUrls = () => {
   }
 };
 
+const onFieldFocus = () => {
+  document.removeEventListener('keydown', handleModalEscape);
+};
+
+const onFieldBlur = () => {
+  document.addEventListener('keydown', handleModalEscape);
+};
+
+const showModal = () => {
+  overlay.classList.remove('hidden');
+  document.body.classList.add('modal-open');
+  document.addEventListener('keydown', handleModalEscape);
+
+  if (pristine) {
+    pristine.reset();
+  }
+};
+
 const hideModal = () => {
   form.reset();
   resetScale();
@@ -142,22 +149,15 @@ const hideModal = () => {
   fileField.value = '';
 };
 
-const onFieldFocus = () => {
-  document.removeEventListener('keydown', handleModalEscape);
-};
-
-const onFieldBlur = () => {
-  document.addEventListener('keydown', handleModalEscape);
-};
-
-const showModal = () => {
-  overlay.classList.remove('hidden');
-  document.body.classList.add('modal-open');
-  document.addEventListener('keydown', handleModalEscape);
-
-  if (pristine) {
-    pristine.reset();
+const handleModalEscape = (evt) => {
+  if (isEscapeKey(evt) && !overlay.classList.contains('hidden')) {
+    evt.preventDefault();
+    hideModal();
   }
+};
+
+const onCancelButtonClick = () => {
+  hideModal();
 };
 
 const setupValidation = () => {
@@ -243,13 +243,6 @@ const onFileInputChange = () => {
 
 let errorOverlay = null;
 
-const handleErrorOverlayEscape = (evt) => {
-  if (isEscapeKey(evt)) {
-    closeErrorOverlay();
-    openUploadForm();
-  }
-};
-
 const openUploadForm = () => {
   fileField.click();
 };
@@ -260,6 +253,13 @@ const closeErrorOverlay = () => {
     errorOverlay = null;
   }
   document.removeEventListener('keydown', handleErrorOverlayEscape);
+};
+
+const handleErrorOverlayEscape = (evt) => {
+  if (isEscapeKey(evt)) {
+    closeErrorOverlay();
+    openUploadForm();
+  }
 };
 
 const showErrorOverlay = (errorText) => {

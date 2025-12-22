@@ -5,6 +5,16 @@ const showMessage = (template, buttonClass, closeCallback = null) => {
   const messageElement = template.cloneNode(true);
   const messageButton = messageElement.querySelector(buttonClass);
 
+  const closeMessage = () => {
+    messageElement.remove();
+    document.removeEventListener('keydown', onDocumentKeydown);
+    document.removeEventListener('click', onOutsideClick);
+
+    if (typeof closeCallback === 'function') {
+      closeCallback();
+    }
+  };
+
   const onDocumentKeydown = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
@@ -15,16 +25,6 @@ const showMessage = (template, buttonClass, closeCallback = null) => {
   const onOutsideClick = (evt) => {
     if (!evt.target.closest(`.${template.classList[0]}__inner`)) {
       closeMessage();
-    }
-  };
-
-  const closeMessage = () => {
-    messageElement.remove();
-    document.removeEventListener('keydown', onDocumentKeydown);
-    document.removeEventListener('click', onOutsideClick);
-
-    if (typeof closeCallback === 'function') {
-      closeCallback();
     }
   };
 
@@ -62,10 +62,6 @@ const showErrorMessage = (text = 'Не удалось загрузить дан�
   if (hideForm) {
     const closeFormCallback = () => {
       hideModal();
-      const fileField = document.querySelector('.img-upload__input');
-      if (fileField) {
-        fileField.click();
-      }
     };
     showMessage(template, '.error__button', closeFormCallback);
   } else {

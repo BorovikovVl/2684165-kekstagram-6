@@ -2,7 +2,7 @@ const DEBOUNCE_DELAY = 500;
 
 const debounce = (callback, timeoutDelay = DEBOUNCE_DELAY) => {
   let timeoutId;
-  
+
   return (...args) => {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => callback(...args), timeoutDelay);
@@ -11,7 +11,7 @@ const debounce = (callback, timeoutDelay = DEBOUNCE_DELAY) => {
 
 const throttle = (callback, delayBetweenFrames = DEBOUNCE_DELAY) => {
   let lastTime = 0;
-  
+
   return (...args) => {
     const now = new Date();
     if (now - lastTime >= delayBetweenFrames) {
@@ -53,7 +53,7 @@ const toggleElementVisibility = (element, isVisible) => {
   if (!element) {
     return;
   }
-  
+
   if (isVisible) {
     element.classList.remove('hidden');
   } else {
@@ -65,13 +65,13 @@ const smoothScrollToElement = (element, options = {}) => {
   if (!element || !element.scrollIntoView) {
     return;
   }
-  
+
   const defaultOptions = {
     behavior: 'smooth',
     block: 'center',
     ...options
   };
-  
+
   element.scrollIntoView(defaultOptions);
 };
 
@@ -87,7 +87,7 @@ const isElementInViewport = (element) => {
   if (!element) {
     return false;
   }
-  
+
   const rect = element.getBoundingClientRect();
   return (
     rect.top >= 0 &&

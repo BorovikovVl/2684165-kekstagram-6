@@ -5,7 +5,6 @@ const RANDOM_PHOTOS_COUNT = 10;
 const filtersContainer = document.querySelector('.img-filters');
 const filterButtons = document.querySelectorAll('.img-filters__button');
 let currentFilter = 'filter-default';
-let debounceTimeout = null;
 
 const FilterType = {
   DEFAULT: 'filter-default',
