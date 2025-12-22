@@ -36,6 +36,7 @@ const ErrorText = {
 };
 
 let pristine;
+let modalEscapeHandler = null;
 
 const normalizeTags = (tagString) => tagString
   .trim()
@@ -103,20 +104,14 @@ const cleanupObjectUrls = () => {
 };
 
 const onFieldFocus = () => {
-  document.removeEventListener('keydown', handleModalEscape);
+  if (modalEscapeHandler) {
+    document.removeEventListener('keydown', modalEscapeHandler);
+  }
 };
 
 const onFieldBlur = () => {
-  document.addEventListener('keydown', handleModalEscape);
-};
-
-const showModal = () => {
-  overlay.classList.remove('hidden');
-  document.body.classList.add('modal-open');
-  document.addEventListener('keydown', handleModalEscape);
-
-  if (pristine) {
-    pristine.reset();
+  if (modalEscapeHandler) {
+    document.addEventListener('keydown', modalEscapeHandler);
   }
 };
 
@@ -144,20 +139,35 @@ const hideModal = () => {
 
   overlay.classList.add('hidden');
   document.body.classList.remove('modal-open');
-  document.removeEventListener('keydown', handleModalEscape);
+  
+  // Удаляем обработчик Escape
+  if (modalEscapeHandler) {
+    document.removeEventListener('keydown', modalEscapeHandler);
+    modalEscapeHandler = null;
+  }
 
   fileField.value = '';
 };
 
-const handleModalEscape = (evt) => {
-  if (isEscapeKey(evt) && !overlay.classList.contains('hidden')) {
-    evt.preventDefault();
-    hideModal();
-  }
-};
-
 const onCancelButtonClick = () => {
   hideModal();
+};
+
+const showModal = () => {
+  modalEscapeHandler = (evt) => {
+    if (isEscapeKey(evt) && !overlay.classList.contains('hidden')) {
+      evt.preventDefault();
+      hideModal();
+    }
+  };
+
+  overlay.classList.remove('hidden');
+  document.body.classList.add('modal-open');
+  document.addEventListener('keydown', modalEscapeHandler);
+
+  if (pristine) {
+    pristine.reset();
+  }
 };
 
 const setupValidation = () => {
@@ -221,27 +231,8 @@ const setupFieldFocusHandlers = () => {
   commentField.addEventListener('blur', onFieldBlur);
 };
 
-const onFileInputChange = () => {
-  const file = fileField.files[0];
-
-  if (!file) {
-    return;
-  }
-
-  if (!isValidFileType(file, FILE_TYPES)) {
-    showErrorMessage(ErrorText.INVALID_FILE_TYPE);
-    fileField.value = '';
-    return;
-  }
-
-  cleanupObjectUrls();
-
-  const fileUrl = createPreviewUrl(file);
-  updateImagePreview(fileUrl);
-  showModal();
-};
-
 let errorOverlay = null;
+let errorOverlayEscapeHandler = null;
 
 const openUploadForm = () => {
   fileField.click();
@@ -252,14 +243,94 @@ const closeErrorOverlay = () => {
     errorOverlay.remove();
     errorOverlay = null;
   }
-  document.removeEventListener('keydown', handleErrorOverlayEscape);
+  if (errorOverlayEscapeHandler) {
+    document.removeEventListener('keydown', errorOverlayEscapeHandler);
+    errorOverlayEscapeHandler = null;
+  }
 };
 
-const handleErrorOverlayEscape = (evt) => {
-  if (isEscapeKey(evt)) {
+const showFileTypeError = () => {
+  errorOverlay = document.createElement('div');
+  errorOverlay.className = 'error-overlay';
+  errorOverlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  `;
+
+  const errorContent = document.createElement('div');
+  errorContent.className = 'error-overlay__content';
+  errorContent.style.cssText = `
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 400px;
+  `;
+
+  errorContent.innerHTML = `
+    <h3 style="margin-bottom: 15px; color: #ff6b6b;">Ошибка загрузки</h3>
+    <p style="margin-bottom: 20px;">${ErrorText.INVALID_FILE_TYPE}</p>
+    <button type="button" class="error-overlay__button" style="
+      background-color: #ff6b6b;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+    ">Загрузить другой файл</button>
+  `;
+
+  errorOverlay.appendChild(errorContent);
+  document.body.appendChild(errorOverlay);
+
+  errorOverlayEscapeHandler = (evt) => {
+    if (isEscapeKey(evt)) {
+      closeErrorOverlay();
+      openUploadForm();
+    }
+  };
+
+  document.addEventListener('keydown', errorOverlayEscapeHandler);
+
+  errorOverlay.querySelector('.error-overlay__button').addEventListener('click', () => {
     closeErrorOverlay();
     openUploadForm();
+  });
+  
+  errorOverlay.addEventListener('click', (evt) => {
+    if (evt.target === errorOverlay) {
+      closeErrorOverlay();
+      openUploadForm();
+    }
+  });
+};
+
+const onFileInputChange = () => {
+  const file = fileField.files[0];
+
+  if (!file) {
+    return;
   }
+
+  if (!isValidFileType(file, FILE_TYPES)) {
+    showFileTypeError();
+    fileField.value = '';
+    return;
+  }
+
+  cleanupObjectUrls();
+
+  const fileUrl = createPreviewUrl(file);
+  updateImagePreview(fileUrl);
+  showModal();
 };
 
 const showErrorOverlay = (errorText) => {
@@ -304,7 +375,14 @@ const showErrorOverlay = (errorText) => {
   errorOverlay.appendChild(errorContent);
   document.body.appendChild(errorOverlay);
 
-  document.addEventListener('keydown', handleErrorOverlayEscape);
+  errorOverlayEscapeHandler = (evt) => {
+    if (isEscapeKey(evt)) {
+      closeErrorOverlay();
+      openUploadForm();
+    }
+  };
+
+  document.addEventListener('keydown', errorOverlayEscapeHandler);
 
   errorOverlay.querySelector('.error-overlay__button').addEventListener('click', () => {
     closeErrorOverlay();
