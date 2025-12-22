@@ -100,6 +100,64 @@ const cleanupObjectUrls = () => {
   }
 };
 
+const onDocumentKeydown = (evt) => {
+  if (evt.key === 'Escape' && !overlay.classList.contains('hidden')) {
+    evt.preventDefault();
+    onCancelButtonClick();
+  }
+};
+
+const onFieldFocus = () => {
+  document.removeEventListener('keydown', onDocumentKeydown);
+};
+
+const onFieldBlur = () => {
+  document.addEventListener('keydown', onDocumentKeydown);
+};
+
+const onCancelButtonClick = () => {
+  hideModal();
+};
+
+const showModal = () => {
+  overlay.classList.remove('hidden');
+  document.body.classList.add('modal-open');
+  document.addEventListener('keydown', onDocumentKeydown);
+
+  if (pristine) {
+    pristine.reset();
+  }
+};
+
+const hideModal = () => {
+  form.reset();
+  resetScale();
+  resetEffects();
+  destroyEffects();
+
+  if (pristine) {
+    pristine.reset();
+  }
+
+  cleanupObjectUrls();
+
+  if (imgPreview) {
+    imgPreview.src = 'img/upload-default-image.jpg';
+  }
+
+  if (effectsPreviews.length > 0) {
+    effectsPreviews.forEach((effectPreview) => {
+      effectPreview.style.backgroundImage = '';
+    });
+  }
+
+  overlay.classList.add('hidden');
+  document.body.classList.remove('modal-open');
+  document.removeEventListener('keydown', onDocumentKeydown);
+
+  fileField.value = '';
+};
+
 const setupValidation = () => {
   if (typeof Pristine === 'undefined') {
     return;
@@ -154,69 +212,11 @@ const setupLiveValidation = () => {
   });
 };
 
-const onFieldFocus = () => {
-  document.removeEventListener('keydown', onDocumentKeydown);
-};
-
-const onFieldBlur = () => {
-  document.addEventListener('keydown', onDocumentKeydown);
-};
-
 const setupFieldFocusHandlers = () => {
   hashtagField.addEventListener('focus', onFieldFocus);
   hashtagField.addEventListener('blur', onFieldBlur);
   commentField.addEventListener('focus', onFieldFocus);
   commentField.addEventListener('blur', onFieldBlur);
-};
-
-const onCancelButtonClick = () => {
-  hideModal();
-};
-
-const onDocumentKeydown = (evt) => {
-  if (evt.key === 'Escape' && !overlay.classList.contains('hidden')) {
-    evt.preventDefault();
-    onCancelButtonClick();
-  }
-};
-
-const showModal = () => {
-  overlay.classList.remove('hidden');
-  document.body.classList.add('modal-open');
-  document.addEventListener('keydown', onDocumentKeydown);
-
-  if (pristine) {
-    pristine.reset();
-  }
-};
-
-const hideModal = () => {
-  form.reset();
-  resetScale();
-  resetEffects();
-  destroyEffects();
-
-  if (pristine) {
-    pristine.reset();
-  }
-
-  cleanupObjectUrls();
-
-  if (imgPreview) {
-    imgPreview.src = 'img/upload-default-image.jpg';
-  }
-
-  if (effectsPreviews.length > 0) {
-    effectsPreviews.forEach((effectPreview) => {
-      effectPreview.style.backgroundImage = '';
-    });
-  }
-
-  overlay.classList.add('hidden');
-  document.body.classList.remove('modal-open');
-  document.removeEventListener('keydown', onDocumentKeydown);
-
-  fileField.value = '';
 };
 
 const onFileInputChange = () => {
