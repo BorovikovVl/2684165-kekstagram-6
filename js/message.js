@@ -4,6 +4,8 @@ const successTemplate = document.querySelector('#success').content.querySelector
 const showMessage = (template, buttonClass, closeCallback = null) => {
   const messageElement = template.cloneNode(true);
   const messageButton = messageElement.querySelector(buttonClass);
+  const template = messageTemplate.cloneNode(true);
+  template.querySelector('.error__title').textContent = text;
 
   const onDocumentKeydown = (evt) => {
     if (evt.key === 'Escape') {
@@ -62,6 +64,10 @@ const showErrorMessage = (text = 'Не удалось загрузить дан�
   if (hideForm) {
     const closeFormCallback = () => {
       hideModal();
+      const fileField = document.querySelector('.img-upload__input');
+      if (fileField) {
+        fileField.click();
+      }
     };
     showMessage(template, '.error__button', closeFormCallback);
   } else {

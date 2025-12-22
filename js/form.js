@@ -239,6 +239,10 @@ const onFileInputChange = () => {
   showModal();
 };
 
+const openUploadForm = () => {
+  fileField.click();
+};
+
 const showErrorOverlay = (errorText) => {
   const errorOverlay = document.createElement('div');
   errorOverlay.className = 'error-overlay';
@@ -275,7 +279,7 @@ const showErrorOverlay = (errorText) => {
       padding: 10px 20px;
       border-radius: 5px;
       cursor: pointer;
-    ">Понятно</button>
+    ">Загрузить другой файл</button>
   `;
 
   errorOverlay.appendChild(errorContent);
@@ -289,15 +293,21 @@ const showErrorOverlay = (errorText) => {
   const onEscapePress = (evt) => {
     if (evt.key === 'Escape') {
       closeErrorOverlay();
+      openUploadForm();
     }
   };
 
   document.addEventListener('keydown', onEscapePress);
 
-  errorOverlay.querySelector('.error-overlay__button').addEventListener('click', closeErrorOverlay);
+  errorOverlay.querySelector('.error-overlay__button').addEventListener('click', () => {
+    closeErrorOverlay();
+    openUploadForm();
+  });
+
   errorOverlay.addEventListener('click', (evt) => {
     if (evt.target === errorOverlay) {
       closeErrorOverlay();
+      openUploadForm();
     }
   });
 };
