@@ -153,6 +153,7 @@ const onCancelButtonClick = () => {
 };
 
 const showModal = () => {
+
   documentKeydownHandler = (evt) => {
     if (isEscapeKey(evt) && !overlay.classList.contains('hidden')) {
       evt.preventDefault();

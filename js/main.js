@@ -4,7 +4,9 @@ import { initScale } from './scale.js';
 import { initEffects } from './effects.js';
 import { getData } from './api.js';
 import { showErrorMessage } from './message.js';
-import { initFilters } from './filters.js';
+import { initFilters, updateFilterPhotos } from './filters.js';
+
+let photosData = [];
 
 const renderWithClear = (photos) => {
   const picturesContainer = document.querySelector('.pictures');
@@ -20,6 +22,7 @@ const renderWithClear = (photos) => {
 const initApp = () => {
   getData()
     .then((photos) => {
+      photosData = photos;
       renderPictures(photos);
       initFilters(photos, renderWithClear);
     })
@@ -40,4 +43,12 @@ const initApp = () => {
   }
 };
 
+const refreshFilters = () => {
+  if (photosData.length > 0) {
+    updateFilterPhotos(photosData);
+  }
+};
+
 document.addEventListener('DOMContentLoaded', initApp);
+
+export { refreshFilters };

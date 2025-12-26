@@ -3,8 +3,11 @@ import { debounce, DEBOUNCE_DELAY, shuffleArray } from './utils.js';
 const RANDOM_PHOTOS_COUNT = 10;
 
 const filtersContainer = document.querySelector('.img-filters');
-const filterButtons = document.querySelectorAll('.img-filters__button');
+const filterButtons = filtersContainer.querySelectorAll('.img-filters__button');
 let currentFilter = 'filter-default';
+let currentPhotos = [];
+let renderCallback = null;
+let debouncedFilterHandler = null;
 
 const FilterType = {
   DEFAULT: 'filter-default',
@@ -36,7 +39,7 @@ const filterPhotos = (photos, filterType) => {
   }
 };
 
-const onFilterChange = (callback, photos) => (evt) => {
+const onFilterButtonClick = (evt) => {
   const target = evt.target;
 
   if (!target.matches('.img-filters__button')) {
@@ -56,15 +59,35 @@ const onFilterChange = (callback, photos) => (evt) => {
 
   currentFilter = clickedButton.id;
 
-  const filteredPhotos = filterPhotos(photos, currentFilter);
-  callback(filteredPhotos);
+  const filteredPhotos = filterPhotos(currentPhotos, currentFilter);
+  renderCallback(filteredPhotos);
 };
 
-const initFilters = (photos, renderCallback) => {
+const initFilters = (photos, callback) => {
   filtersContainer.classList.remove('img-filters--inactive');
 
-  const debouncedFilterHandler = debounce(onFilterChange(renderCallback, photos), DEBOUNCE_DELAY);
+  currentPhotos = photos;
+  renderCallback = callback;
+
+  if (debouncedFilterHandler) {
+    filtersContainer.removeEventListener('click', debouncedFilterHandler);
+  }
+
+  debouncedFilterHandler = debounce(onFilterButtonClick, DEBOUNCE_DELAY);
   filtersContainer.addEventListener('click', debouncedFilterHandler);
+
+  filterButtons.forEach((button) => {
+    button.classList.remove('img-filters__button--active');
+  });
+  const defaultButton = filtersContainer.querySelector('#filter-default');
+  if (defaultButton) {
+    defaultButton.classList.add('img-filters__button--active');
+  }
+  currentFilter = 'filter-default';
 };
 
-export { initFilters };
+const updateFilterPhotos = (photos) => {
+  currentPhotos = photos;
+};
+
+export { initFilters, updateFilterPhotos };
