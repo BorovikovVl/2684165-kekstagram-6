@@ -73,7 +73,7 @@ const closeFullscreenPicture = () => {
   bigPicture.classList.add('hidden');
   document.body.classList.remove('modal-open');
   resetComments();
-  
+
   if (documentKeydownHandler) {
     document.removeEventListener('keydown', documentKeydownHandler);
     documentKeydownHandler = null;
@@ -93,13 +93,13 @@ const openFullscreenPicture = (pictureData) => {
 
   bigPicture.classList.remove('hidden');
   document.body.classList.add('modal-open');
-  
+
   documentKeydownHandler = (evt) => {
     if (isEscapeKey(evt) && !bigPicture.classList.contains('hidden')) {
       closeFullscreenPicture();
     }
   };
-  
+
   document.addEventListener('keydown', documentKeydownHandler);
 };
 

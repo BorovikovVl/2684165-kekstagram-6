@@ -2,12 +2,12 @@ import { resetScale } from './scale.js';
 import { resetEffects, destroyEffects } from './effects.js';
 import { sendData } from './api.js';
 import { showErrorMessage, showSuccessMessage } from './message.js';
-import { 
-  isEscapeKey, 
-  checkFileType, 
-  createObjectURLFromFile, 
+import {
+  isEscapeKey,
+  checkFileType,
+  createObjectURLFromFile,
   revokeObjectURLIfExists,
-  scrollToElementSmoothly 
+  scrollToElementSmoothly
 } from './utils.js';
 
 const MAX_HASHTAG_COUNT = 5;
@@ -139,7 +139,7 @@ const hideModal = () => {
 
   overlay.classList.add('hidden');
   document.body.classList.remove('modal-open');
-  
+
   if (documentKeydownHandler) {
     document.removeEventListener('keydown', documentKeydownHandler);
     documentKeydownHandler = null;

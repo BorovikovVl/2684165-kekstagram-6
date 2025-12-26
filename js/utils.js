@@ -2,7 +2,7 @@ const DEBOUNCE_DELAY = 500;
 
 const debounce = (callback, timeoutDelay = DEBOUNCE_DELAY) => {
   let timeoutId;
-  
+
   return (...args) => {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => callback(...args), timeoutDelay);
@@ -41,13 +41,13 @@ const scrollToElementSmoothly = (element, options = {}) => {
   if (!element || !element.scrollIntoView) {
     return;
   }
-  
+
   const defaultOptions = {
     behavior: 'smooth',
     block: 'center',
     ...options
   };
-  
+
   element.scrollIntoView(defaultOptions);
 };
 

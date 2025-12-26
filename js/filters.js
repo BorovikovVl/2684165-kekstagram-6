@@ -16,7 +16,7 @@ const FilterType = {
 };
 
 const getRandomPhotos = (photos) => {
-  const shuffledPhotos = shuffleArra([...photos]);
+  const shuffledPhotos = shuffleArray([...photos]);
   return shuffledPhotos.slice(0, RANDOM_PHOTOS_COUNT);
 };
 
