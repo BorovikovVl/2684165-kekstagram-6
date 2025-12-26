@@ -1,4 +1,4 @@
-import { debounce, DEBOUNCE_DELAY, shuffleArrayRandomly } from './utils.js';
+import { debounce, DEBOUNCE_DELAY, shuffleArray } from './utils.js';
 
 const RANDOM_PHOTOS_COUNT = 10;
 
@@ -12,7 +12,7 @@ const FilterType = {
 };
 
 const getRandomPhotos = (photos) => {
-  const shuffledPhotos = shuffleArrayRandomly([...photos]);
+  const shuffledPhotos = shuffleArray([...photos]);
   return shuffledPhotos.slice(0, RANDOM_PHOTOS_COUNT);
 };
 
