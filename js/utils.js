@@ -51,7 +51,7 @@ const scrollToElementSmoothly = (element, options = {}) => {
   element.scrollIntoView(defaultOptions);
 };
 
-const shuffleArray = (array) => {
+const shuffleArrayRandomly = (array) => {
   const shuffled = [...array];
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -70,5 +70,5 @@ export {
   createObjectURLFromFile,
   revokeObjectURLIfExists,
   scrollToElementSmoothly,
-  shuffleArray
+  shuffleArrayRandomly
 };
