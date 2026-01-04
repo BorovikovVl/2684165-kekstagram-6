@@ -1,4 +1,4 @@
-import { debounce, DEBOUNCE_DELAY, shuffleArray } from './utils.js';
+import { debounce, DEBOUNCE_DELAY, shuffleArrayRandomly } from './utils.js';
 
 const RANDOM_PHOTOS_COUNT = 10;
 const DEBOUNCE_TIMEOUT = 500;
@@ -15,7 +15,7 @@ const FilterType = {
 };
 
 const getRandomPhotos = (photos) => {
-  const shuffledPhotos = shuffleArray([...photos]);
+  const shuffledPhotos = shuffleArrayRandomly([...photos]);
   return shuffledPhotos.slice(0, RANDOM_PHOTOS_COUNT);
 };
 
@@ -63,10 +63,10 @@ const onFilterButtonClick = (evt) => {
 
 const initFilters = (photos, callback) => {
   filtersContainer.classList.remove('img-filters--inactive');
-  
+
   currentPhotos = photos;
   currentCallback = callback;
-  
+
   const filterButtons = filtersContainer.querySelectorAll('.img-filters__button');
   filterButtons.forEach((button) => {
     button.classList.remove('img-filters__button--active');
@@ -79,9 +79,22 @@ const initFilters = (photos, callback) => {
   if (debouncedHandler) {
     filtersContainer.removeEventListener('click', debouncedHandler);
   }
-  
+
   debouncedHandler = debounce(onFilterButtonClick, DEBOUNCE_TIMEOUT);
   filtersContainer.addEventListener('click', debouncedHandler);
 };
 
-export { initFilters };
+const updateFilterPhotos = (photos) => {
+  currentPhotos = photos;
+
+  const filterButtons = filtersContainer.querySelectorAll('.img-filters__button');
+  filterButtons.forEach((button) => {
+    button.classList.remove('img-filters__button--active');
+  });
+  const defaultButton = filtersContainer.querySelector('#filter-default');
+  if (defaultButton) {
+    defaultButton.classList.add('img-filters__button--active');
+  }
+};
+
+export { initFilters, updateFilterPhotos };
