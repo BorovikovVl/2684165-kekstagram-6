@@ -61,7 +61,6 @@ const shuffleArrayRandomly = (array) => {
 };
 
 export {
-  DEBOUNCE_DELAY,
   debounce,
   isEscapeKey,
   isEnterKey,

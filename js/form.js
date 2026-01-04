@@ -2,7 +2,7 @@ import { resetScale } from './scale.js';
 import { resetEffects, destroyEffects } from './effects.js';
 import { sendData } from './api.js';
 import { showErrorMessage, showSuccessMessage } from './message.js';
-import { 
+import {
   isEscapeKey,
   checkFileType,
   createObjectURLFromFile,
